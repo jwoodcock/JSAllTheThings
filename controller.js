@@ -1,5 +1,5 @@
 console.log( 'hello', document );
-var wait = 1000;
+var wait = 1000; // timer so we can watch the dom change in the console.
 
 function createHead() {
     // check that the head element is not already there
