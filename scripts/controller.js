@@ -45,7 +45,7 @@ function createScript( scriptLocation ) {
                 "scripts/ajax.js",
             ];
             // call function to load scripts
-            setTimeout(loadScripts, wait + 400, scripts, 0);
+            setTimeout(loadScripts, wait + 200, scripts, 0);
         }
     }
     // now append to head
@@ -68,15 +68,20 @@ function loadScripts(scripts, position) {
                 return false;
             }
             // if not call function to load next script
-            setTimeout(loadScripts, wait + 400, scripts, position);
+            setTimeout(loadScripts, wait + 200, scripts, position);
         }
     }
     // now append to head
     document.head.appendChild( script );
 }
 
+// Before showing body, write this
+function getWait() {
+    return wait = wait + 200;
+}
+
 setTimeout(createBody, wait + 200 );
 if ( setTimeout( createHead, wait ) ) {
-    setTimeout( createScript, wait + 400, 'scripts/body.js' );
+    setTimeout( createScript, wait + 200, 'scripts/body.js' );
 }
 
