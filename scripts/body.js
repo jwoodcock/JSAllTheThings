@@ -59,7 +59,18 @@ setTimeout( function() {
     // 9 create div and set background color
     body.createElement( 'div', 'first_div', '');
     body.updateElement( 'first_div', [ 'style', 'backgroundColor' ], '#CCCCCC' );
-    body.updateElement( 'first_div', [ 'style', 'width' ], '200px' );
-    body.updateElement( 'first_div', [ 'style', 'height' ], '200px' );
+    body.updateElement( 'first_div', [ 'style', 'width' ], '500px' );
+    body.updateElement( 'first_div', [ 'style', 'height' ], '500px' );
+    // 10 create image and attach a source
+    body.createElement( 'img', 'WAT', 'first_div');
+    setTimeout( function() {
+    body.updateElement( 'WAT', 'src', 'http://i.imgur.com/CXpK6Rg.jpg' );
+    }, getWait() );
+    // 11 now let's center it
+    body.updateElement( 'first_div', [ 'style', 'textAlign' ], 'center' );
+    // 12 Let's grab the image and put it inside a link
+    var ourImage = document.getElementById( 'WAT' );
+    body.createElement( 'a', 'my_link', 'first_div' );
+    
 
 }, getWait() );
