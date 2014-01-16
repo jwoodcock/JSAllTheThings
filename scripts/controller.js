@@ -1,6 +1,8 @@
+// 1 starting
 console.log( 'hello', document );
 var wait = 1000; // timer so we can watch the dom change in the console.
 
+// 2 create head elements
 function createHead() {
     // check that the head element is not already there
     if ( !document.head ) {
@@ -15,6 +17,7 @@ function createHead() {
     return true;
 }
 
+// 4 create head elements
 function createBody() {
     // check to see if we have the body element
     if ( !document.body ) {
@@ -29,15 +32,18 @@ function createBody() {
     body.setAttribute( "id", "the_body" );
 }
 
+// 6
 function createScript( scriptLocation ) {
     // create the script element
     var script = document.createElement('script');
     // set source
     script.src = scriptLocation;
+    // 8 add listener after showing append
     // add listener for when script is loaded
     script.onload = script.onreadystatechange = function() {
         // check the state to see if script is loaded
         if ((!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
+            // 9 first do console then add this
             // now that the script is loaded, let's load the rest in one function
             // define scripts to load
             var scripts = [
@@ -52,6 +58,7 @@ function createScript( scriptLocation ) {
     document.head.appendChild( script );
 }
 
+// 10 write this out
 function loadScripts(scripts, position) {
     // create the script element
     var script = document.createElement('script');
@@ -75,12 +82,16 @@ function loadScripts(scripts, position) {
     document.head.appendChild( script );
 }
 
+// 11 for future use
 // Before showing body, write this
 function getWait() {
     return wait = wait + 200;
 }
 
+// 5 create body elements
 setTimeout(createBody, wait + 200 );
+// 3 outside the if create head
+// 7 move into an if statement
 if ( setTimeout( createHead, wait ) ) {
     setTimeout( createScript, wait + 200, 'scripts/body.js' );
 }
