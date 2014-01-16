@@ -44,14 +44,22 @@ function bodyView() {
             }
         }
     }
-    // 13 create function to move dom objects to inside another
+    // 13 create function to move dom elements to inside another
     this.moveElement = function( mover, moveTo ) {
         // get the mover
         var moverObj = document.getElementById( mover );
         // remove mover
-        moverObj.parentNode.removeChild( moverObj );
+        //moverObj.parentNode.removeChild( moverObj );
+        // 18 replace the above with the new call
+        this.deleteElement( mover ); 
         // append to moveTo target
         document.getElementById( moveTo ).appendChild( moverObj );
+    }
+    // 17 function to delete dom elements
+    this.deleteElement = function( target ) {
+        // get element to delete
+        var deleteElement = document.getElementById( target );
+        deleteElement.parentNode.removeChild( deleteElement );
     }
 }
 
@@ -73,7 +81,11 @@ setTimeout( function() {
     // 10 create image and attach a source
     body.createElement( 'img', 'WAT', 'first_div');
     setTimeout( function() {
-    body.updateElement( 'WAT', 'src', 'http://i.imgur.com/CXpK6Rg.jpg' );
+        body.updateElement( 'WAT', 'src', 'http://i.imgur.com/CXpK6Rg.jpg' );
+        // 14 now let's move the image to inside the link
+        body.moveElement( 'WAT', 'my_link' );
+        // 16 let's delete it here so you can see it created then deleted
+        body.deleteElement( 'delete_header' );
     }, getWait() );
     // 11 now let's center it
     body.updateElement( 'first_div', [ 'style', 'textAlign' ], 'center' );
@@ -81,7 +93,11 @@ setTimeout( function() {
     body.createElement( 'a', 'my_link', 'first_div' );
     body.updateElement( 'my_link', 'target', '_blank' );
     body.updateElement( 'my_link', 'href', 'http://pytennessee.org' );
-    // 14 now let's move the image to inside the link
-    body.moveElement( 'WAT', 'my_link' );
+    // 15 let's create some things to delete
+    body.createElement( 'div', 'second_div', '');
+    body.updateElement( 'second_div', [ 'style', 'border' ], '1px solid' );
+    body.updateElement( 'second_div', [ 'style', 'padding' ], '10px' );
+    body.createElement( 'h2', 'delete_header', 'second_div');
+    body.updateElement( 'delete_header', 'innerHTML', 'Just something to delete' );
 
 }, getWait() );
