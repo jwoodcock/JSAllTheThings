@@ -44,6 +44,15 @@ function bodyView() {
             }
         }
     }
+    // 13 create function to move dom objects to inside another
+    this.moveElement = function( mover, moveTo ) {
+        // get the mover
+        var moverObj = document.getElementById( mover );
+        // remove mover
+        moverObj.parentNode.removeChild( moverObj );
+        // append to moveTo target
+        document.getElementById( moveTo ).appendChild( moverObj );
+    }
 }
 
 setTimeout( function() {
@@ -68,9 +77,11 @@ setTimeout( function() {
     }, getWait() );
     // 11 now let's center it
     body.updateElement( 'first_div', [ 'style', 'textAlign' ], 'center' );
-    // 12 Let's grab the image and put it inside a link
-    var ourImage = document.getElementById( 'WAT' );
+    // 12 create link element with properties
     body.createElement( 'a', 'my_link', 'first_div' );
-    
+    body.updateElement( 'my_link', 'target', '_blank' );
+    body.updateElement( 'my_link', 'href', 'http://pytennessee.org' );
+    // 14 now let's move the image to inside the link
+    body.moveElement( 'WAT', 'my_link' );
 
 }, getWait() );
