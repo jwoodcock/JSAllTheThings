@@ -99,5 +99,11 @@ setTimeout( function() {
     body.updateElement( 'second_div', [ 'style', 'padding' ], '10px' );
     body.createElement( 'h2', 'delete_header', 'second_div');
     body.updateElement( 'delete_header', 'innerHTML', 'Just something to delete' );
+    // 16 setup an element to highlight actions later
+    body.createElement( 'div', 'highlight', '');
+    body.updateElement( 'highlight', [ 'style', 'position' ], 'absolute' );
+    body.updateElement( 'highlight', [ 'style', 'top' ], '0px;' );
+    body.updateElement( 'highlight', [ 'style', 'right' ], '0px;' );
+    body.updateElement( 'highlight', [ 'style', 'background' ], '#cccccc;' );
 
 }, getWait() );
