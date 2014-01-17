@@ -81,7 +81,7 @@ setTimeout( function() {
     // 10 create image and attach a source
     body.createElement( 'img', 'WAT', 'first_div');
     setTimeout( function() {
-        body.updateElement( 'WAT', 'src', 'http://i.imgur.com/CXpK6Rg.jpg' );
+        body.updateElement( 'WAT', 'src', 'resources/CXpK6Rg.jpg' );
         // 14 now let's move the image to inside the link
         body.moveElement( 'WAT', 'my_link' );
         // 16 let's delete it here so you can see it created then deleted
