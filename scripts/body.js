@@ -59,7 +59,9 @@ function bodyView() {
     this.deleteElement = function( target ) {
         // get element to delete
         var deleteElement = document.getElementById( target );
-        deleteElement.parentNode.removeChild( deleteElement );
+        if ( deleteElement ) {
+            deleteElement.parentNode.removeChild( deleteElement );
+        }
     }
 }
 
@@ -106,5 +108,24 @@ setTimeout( function() {
     body.updateElement( 'highlight', [ 'style', 'right' ], '0px' );
     body.updateElement( 'highlight', [ 'style', 'background' ], '#cccccc' );
     body.updateElement( 'highlight', [ 'style', 'padding' ], '10px' );
+    // 17 Do Listeners
+    setTimeout( function() {
+        // 18 Delete all elements
+        var toDelete =  [
+            'first_header',
+            'first_div',
+            'WAT',
+            'my_link',
+            'second_div',
+            'highlight',
+        ];
+        // loop through and delete all elements
+        for ( item in toDelete ) {
+            body.deleteElement( toDelete[ item ] );
+        }
+        // 19 now to remove the listener
+        document.removeEventListener( 'mouseover', function() { console.log('removed listener'); }, false );
+        document.removeEventListener( 'mouseout', function() { console.log('removed listener'); }, false );
+    }, getWait() + 200 );
 
 }, getWait() );
