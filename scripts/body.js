@@ -124,8 +124,9 @@ setTimeout( function() {
             body.deleteElement( toDelete[ item ] );
         }
         // 19 now to remove the listener
-        document.removeEventListener( 'mouseover', function() { console.log('removed listener'); }, false );
-        document.removeEventListener( 'mouseout', function() { console.log('removed listener'); }, false );
+        // we do this to make sure all listeners are gone
+        document.body.removeEventListener( 'mouseover', function() { console.log('removed listener'); }, false );
+        document.body.removeEventListener( 'mouseout', function() { console.log('removed listener'); }, false );
     }, getWait() + 200 );
 
 }, getWait() );
