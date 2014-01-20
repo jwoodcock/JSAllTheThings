@@ -3,7 +3,7 @@
  */
 
 // 1 Add listener to all elements
-document.addEventListener( 'mouseover', function( e ) {
+document.body.addEventListener( 'mouseover', function( e ) {
     // find out what was hovered
     var tar = e.target;
     // create a new element to act as a tag
