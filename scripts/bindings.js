@@ -1,4 +1,10 @@
-function dataBinder(objectId) {
+/**
+ * This class controls our bindings between the dom and user model
+ * and has our listener for changes between the two
+ * 
+ * @param {String} objectId Id of the object to bind to
+ */
+function dataBinder( objectId ) {
 
     // Create the actual publish and subscription object
     var pubSub = {
