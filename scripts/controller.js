@@ -51,7 +51,7 @@ function createScript( scriptLocation ) {
                 "scripts/ajax.js",
             ];
             // call function to load scripts
-            setTimeout(loadScripts, wait + 200, scripts, 0);
+            setTimeout(loadScripts, wait + 100, scripts, 0);
         }
     }
     // now append to head
@@ -60,6 +60,7 @@ function createScript( scriptLocation ) {
 
 // 10 write this out
 function loadScripts(scripts, position) {
+    console.log('scripts', scripts);
     // create the script element
     var script = document.createElement('script');
     // set source
@@ -75,7 +76,7 @@ function loadScripts(scripts, position) {
                 return false;
             }
             // if not call function to load next script
-            setTimeout(loadScripts, wait + 200, scripts, position);
+            loadScripts( scripts, position );
         }
     }
     // now append to head
@@ -95,4 +96,6 @@ setTimeout(createBody, wait + 200 );
 if ( setTimeout( createHead, wait ) ) {
     setTimeout( createScript, wait + 200, 'scripts/body.js' );
 }
-
+// 20 Create user model and binding
+// 21 load in scrips
+loadScripts( [ 'scripts/bindings.js', 'scripts/user_model.js' ], 0 );
