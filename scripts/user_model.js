@@ -4,7 +4,7 @@
  * 
  * @param {String} uid User id
  */
-function User( uid ) {
+function user( uid ) {
 
     // create an instance of our binder
     var binder = new dataBinder( uid ),
@@ -16,15 +16,19 @@ function User( uid ) {
 
         // The attribute setter publish changes using the dataBinder PubSub
         set: function( attr_name, val ) {
+            if ( !this.attributes[ uid ] ) {
+                this.attributes[ uid ] = [];
+            }
             // setter for defining attribute and value
-            this.attributes[ attr_name ] = val;
+            this.attributes[ uid ][ attr_name ] = val;
             // Use the publish method to force an update
             binder.trigger( uid + ":change", attr_name, val, this );
-        }
+            console.log('Updated Attributes: ', this.attributes);
+        },
 
         // Getter for returning the attribute
         get: function( attr_name ) {
-            return this.attributes[ attr_name ];
+            return this.attributes[ uid ][ attr_name ];
         },
 
         _binder: binder
