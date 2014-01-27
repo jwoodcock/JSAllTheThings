@@ -14,11 +14,13 @@ document.body.addEventListener( 'mouseover', function( e ) {
     var html = '<h3 style="color: red;">' + tar.id + '</h3>';
     // 2 explain innterHTML
     // update hightlight box
-    document.getElementById( 'highlight' ).innerHTML = html;
-    // now let's add a listener to see when we leave the div
-    tar.addEventListener( 'mouseout', function() {
-        document.getElementById( 'highlight' ).innerHTML = 'left';
-    });
+    if (document.getElementById( 'highlight' )) {
+        document.getElementById( 'highlight' ).innerHTML = html;
+        // now let's add a listener to see when we leave the div
+        tar.addEventListener( 'mouseout', function() {
+            document.getElementById( 'highlight' ).innerHTML = 'left';
+        });
+    }
 });
 
 // define what we need to observe
@@ -27,10 +29,11 @@ var observerObj = document.body;
 // setup an observer
 var observer = new MutationObserver( function( mutations ) {
     mutations.forEach( function( mutation ) {
-        console.log( mutation.target.id );
+        //26 commit out console
+        //console.log( mutation.target.id );
         if ( mutation.target.id !== 'highlight' ) {
-            console.log( mutation );
-            console.log( document.body.innerHTML );
+            //console.log( mutation );
+            //console.log( document.body.innerHTML );
         }
     });
 });
