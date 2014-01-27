@@ -63,8 +63,42 @@ function bodyView() {
             deleteElement.parentNode.removeChild( deleteElement );
         }
     }
+    // 22 Create method for setting attribute
+    this.setAttr = function( target, attribute, value) {
+        document.getElementById( target ).setAttribute( attribute, value );
+    }
+    // 27 Create template loader and renderor
+    this.getTemplate = function( template, options, appendee, requestor ) {
+        // make request for template
+        var html = requestor.makeRequest( template );
+        // replace all the options in the template with their values
+        for ( var pos in options ) {
+            var tempPatt = new RegExp( '{{' + pos + '}}', 'g' );
+            html = html.replace(tempPatt, options[ pos ] );
+        }
+        // now that we have the updated html we need to get the current html
+        // of the appendee and combine then replace
+        // show the easy way and explain why it's bad
+        var oldHtml = document.getElementById( appendee ).innerHTML;
+        document.getElementById( appendee ).innerHTML = oldHtml + html;
+        // now that we have all the final html and in the dom
+        // let's tigger an event on each input so the model is created
+        var items = document.querySelectorAll( '[data-bind-' + options.userId + ']' );
+        // create an event so we can populate the model
+        var myEvent = document.createEvent('Event');
+        // define it to match our listener
+        myEvent.initEvent('change', true, true);
+        // loop through each input and trigger the event
+        for ( var i in items ) {
+            var dispatchOn = document.getElementById( items[ i ].id );
+            if (dispatchOn) {
+                dispatchOn.dispatchEvent( myEvent );
+            }
+        }
+    }
 }
 
+// move all this to the controller
 setTimeout( function() {
     // 3 define object so we can call methods on it
     var body = new bodyView();
@@ -109,8 +143,8 @@ setTimeout( function() {
     body.updateElement( 'highlight', [ 'style', 'background' ], '#cccccc' );
     body.updateElement( 'highlight', [ 'style', 'padding' ], '10px' );
     // 17 Do Listeners
+    // 18 Delete all elements
     setTimeout( function() {
-        // 18 Delete all elements
         var toDelete =  [
             'first_header',
             'first_div',
@@ -128,5 +162,69 @@ setTimeout( function() {
         document.body.removeEventListener( 'mouseover', function() { console.log('removed listener'); }, false );
         document.body.removeEventListener( 'mouseout', function() { console.log('removed listener'); }, false );
     }, getWait() + 200 );
+    // 23 Create input
+    body.createElement( 'input', 'user_name', '');
+    body.setAttr( 'user_name', 'data-bind-user1', 'name' );
+    // 24 create user model
+    // going to attach it to the document in the case we need it else where
+    userModel = new user( 'user1' );
+    // 25 Now that we showed it works, let's move the name into 
+    // a user holding div and create a few more properties
+    body.createElement( 'div', 'user_holder', '');
+    body.updateElement( 'user_holder', [ 'style', 'padding' ], '10px' );
+    // create header for users
+    body.createElement( 'h2', 'user_header', 'user_holder');
+    body.updateElement( 'user_header', 'innerHTML', 'User Record' );
+    // move our first input into div holder
+    body.moveElement( 'user_name', 'user_holder' );
+    // create input for phone number
+    body.createElement( 'input', 'user_phone', 'user_holder');
+    body.setAttr( 'user_phone', 'data-bind-user1', 'phone' );
+    // 26 explain this takes a while and we can do better
+    // so let's setup a templating method to body
+    // build options
+    setTimeout( function() {
+        // create the requestor
+        // we do it here as part of DI, makes it easier to test
+        var requestor = new ajax();
+        // create the new user model
+        //var userModel2 = new user( 'user2' );
+        // define what options and values are for inside the template
+        var templateOptions = {
+            'userId': 'user2',
+            'name': 'Jacques',
+            'phone': '615-293-0328',
+        }
+        // make request to add the tempalte
+        body.getTemplate(
+            'templates/user.html',
+            templateOptions,
+            'user_holder',
+            requestor,
+            userModel2
+        );
+    setTimeout( function() {
+        // create the requestor
+        // we do it here as part of DI, makes it easier to test
+        var requestor = new ajax();
+        // create the new user model
+        userModel3 = new user( 'user3' );
+        // define what options and values are for inside the template
+        var templateOptions = {
+            'userId': 'user3',
+            'name': 'Angela',
+            'phone': '615-293-0248',
+        }
+        // make request to add the tempalte
+        body.getTemplate(
+            'templates/user.html',
+            templateOptions,
+            'user_holder',
+            requestor,
+            userModel3
+        );
+    }, getWait() + 200 );
+    }, getWait() + 200 );
+
 
 }, getWait() );
