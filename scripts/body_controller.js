@@ -123,6 +123,21 @@ setTimeout( function() {
             requestor,
             userModel3
         );
+
+        // Find user2 div
+        var user2 = body.findOne( '#user_user2' );
+        console.log( 'user2',  user2 );
+        user2.style.backgroundColor = 'red';
+
+        // Find all inputs
+        var inputs = body.findAll( 'input' );
+        for ( var pos in inputs ) {
+            if ( inputs[ pos ].style ) {
+                inputs[ pos ].style.fontSize = '24px';
+                console.log( 'input ' + pos, inputs[ pos ] );
+            }
+        }
+
     }, getWait() + 200 );
     }, getWait() + 200 );
 
