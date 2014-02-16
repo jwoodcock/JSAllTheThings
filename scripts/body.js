@@ -96,4 +96,18 @@ function domManipulator() {
             }
         }
     }
+    // 28 Find any dom element and retrun one
+    this.findOne = function( tar ) {
+        var found = document.querySelector( tar );
+        if ( found ) {
+            return found;
+        }
+    }
+    // 29. Find all of a type
+    this.findAll = function( tar ) {
+        var found = document.querySelectorAll( tar );
+        if ( found ) {
+            return found;
+        }
+    }
 }
