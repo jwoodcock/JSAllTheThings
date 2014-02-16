@@ -18,7 +18,7 @@ Many of you are probably wondering what's my angle with a pure vanilla JS talk. 
 This is not an anti-framework talk.\
 It's not an anti-jquery talk.\
 \
-It's simply, I believe to be a good programmer, you need to know the stuff that your tools do for you. Many people rely on frameworks and have no idea what they do for you. But by knowing what your tools do for you, you can better decide when they are right to use, and when not; how to fix them if they break and how to make them better. Also, knowing how to do what the tools do, you will be better at programming in general and better understand the language as a whole. \
+Put simply, I believe to be a good programmer you need to know the things your tools do for you. Many people rely on frameworks and have no idea what they do under the hood. But by knowing what your tools do for you and how, you can better decide when they are right to use, and when not; how to fix them if they break and how to make them better. Also, knowing how to do what the tools do, you will be better at programming in general, and better understand the language as a whole. \
 \
 Last thing I want to say is, this all could be better. The purpose is for illustration. You should no put this code directly into production without some clean up an a lot of testing.\
 \
@@ -681,7 +681,39 @@ Once we have this method we can start calling new users via the template. \
 \
 32. And that's it. What we've covered here today shows the base concepts behind jQuery, Handlebars, pieces of Backbone as well as other libraries. Hopefully the bigger than we've done is exposed more of the power of JavaScript and how you can take advantage of that power. \
 \
+33. But wait, there's more. \
+I've got one more treat I want to show you and that involves the querySelector and querySelectorAll built in methods to JS. Let's add two new methods to our body.js class. \
 \
+    this.findOne = function( tar ) \{\
+        var found = document.querySelector( tar );\
+        if ( found ) \{\
+            return found;\
+        \}\
+    \}\
+\
+    this.findAll = function( tar ) \{\
+        var found = document.querySelectorAll( tar );\
+        if ( found ) \{\
+            return found;\
+        \}\
+    \}\
+\
+These are pretty obvious by their names, but what can we do with them? Let's add some code to our body_controller.js file. First for findOne and then findAll. \
+        var user2 = body.findOne( '#user_user2' );\
+        console.log( 'user2',  user2 );\
+        user2.style.backgroundColor = 'red';\
+\
+        var inputs = body.findAll( 'input' );\
+        for ( var pos in inputs ) \{\
+            if ( inputs[ pos ].style ) \{\
+                inputs[ pos ].style.fontSize = '24px';\
+                console.log( 'input ' + pos, inputs[ pos ] );\
+            \}\
+        \}\
+\
+Some of the power of jQuery's selector method right here. \
+\
+34. Finally, using all this code, I've built this application. \
 \
 
 \fs24 \
