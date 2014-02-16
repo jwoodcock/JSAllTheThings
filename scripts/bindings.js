@@ -67,8 +67,6 @@ function dataBinder( objectId ) {
                 var subStr = curAttr.substring( 0, 9 );
                 var user = curAttr.substring(10);
                 if ( subStr === 'data-bind' ) {
-                    console.log('subStr', subStr);
-                    console.log('subStr', user);
                     return [ attributes[ p ].value, user ];
                 }
             }

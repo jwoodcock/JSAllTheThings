@@ -47,6 +47,7 @@ function createScript( scriptLocation ) {
             // now that the script is loaded, let's load the rest in one function
             // define scripts to load
             var scripts = [
+                "scripts/body_controller.js",
                 "scripts/listeners.js",
                 "scripts/ajax.js",
             ];
