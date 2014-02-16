@@ -1,0 +1,693 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww14000\viewh16220\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs48 \cf0 Outline for JS all the Things Talk
+\fs24 \
+\
+
+\fs30 Beginning
+\fs24 \
+So, just a little background. \
+I've been using JavaScript for the larger part of 14 years. Most of that spent finding scripts that did what I wanted on other sites and then borrowing them for my sites. It wasn't until I started doing ActionScript development 10 years ago that I actually started understanding JavaScript as a language and it wasn't until AJAX got popular that I started using it as a primary language for interactions. Fortunately,or unfortunately, depending on how you look at it, this was before many of the current frameworks got popular. Even jQuery. \
+\
+Many of you are probably wondering what's my angle with a pure vanilla JS talk. So before we start, let me say:\
+\
+This is not an anti-framework talk.\
+It's not an anti-jquery talk.\
+\
+It's simply, I believe to be a good programmer, you need to know the stuff that your tools do for you. Many people rely on frameworks and have no idea what they do for you. But by knowing what your tools do for you, you can better decide when they are right to use, and when not; how to fix them if they break and how to make them better. Also, knowing how to do what the tools do, you will be better at programming in general and better understand the language as a whole. \
+\
+Last thing I want to say is, this all could be better. The purpose is for illustration. You should no put this code directly into production without some clean up an a lot of testing.\
+\
+Let's get started. \
+\
+
+\fs30 1. Setup HTML file and include controller.
+\fs24 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\fs30 \cf0 2. Explain that the DOM should be thought of as one big JS object and JS is in itself a language for the purpose of manipulating this object. \
+\
+So, the document is root of this object, then the head is the first child with body being it's sibling, and so on and so on. In JSON this would be:\
+\
+\{\
+    "body": \{\
+        "head": \{\
+        \},\
+         "body": \{\
+        \}\
+   \}\
+\} \
+\
+3. List some of the methods you can perform directly on the DOM and that we will use today.\
+Event\
+- createElement\
+- appendChild\
+- setAttribute\
+- childNodes\
+- parentNode\
+- getElementById\
+- removeChild\
+- replace\
+- innerHTML\
+- querySelectAll\
+- attributes\
+- dispatchEvent\
+- initEvent\
+\
+Of course there are other functions built into the language to round it out, such as variable manipulations and events, along with a object class system.\
+\
+4. Now, let's go over creating a HEAD to our document, and setting an id to show. We are going to put this into functions so we can call it in a step-by-step process so it's easier to see.\
+// create head elements\
+function createHead() \{\
+    // check that the head element is not already there\
+    if ( !document.head ) \{\
+        console.log( 'create head' );\
+        var head = document.createElement( 'head' );\
+        document.appendChild( head );\
+    \} else \{\
+        var head = document.head;\
+    \}\
+    // for fun, let's set an id on the header\
+    head.setAttribute( 'id' , 'the_main_head' );\
+    return true;\
+\}\
+\
+createHead()\
+\
+5. Next, we need to create a body element.\
+function createBody() \{\
+    // check to see if we have the body element\
+    if ( !document.body ) \{\
+        // create body element\
+        var body = document.createElement( 'body' );\
+        // add to dom\
+        document.childNodes[ 0 ].appendChild( body );\
+    \} else \{\
+        var body = document.body;\
+    \}\
+    // change the id now that we have a body\
+    body.setAttribute( "id", "the_body" );\
+\}\
+\
+Now we're going to call it from inside a wait method so we can see it happen.\
+setTimeout(createBody, wait + 200 );\
+\
+6. We're going to need load more script in the future so the next thing we will do is create a script loading function. \
+function createScript( scriptLocation ) \{\
+    // create the script element\
+    var script = document.createElement('script');\
+    // set source\
+    script.src = scriptLocation;\
+    // now append to head\
+    document.head.appendChild( script );\
+\}\
+\
+After this we'll update our call to create the head element and put it inside an if to insure it loads before calling our new createScript method.\
+if ( setTimeout( createHead, wait ) ) \{\
+    setTimeout( createScript, wait + 200, 'scripts/body.js' );\
+\}\
+\
+7. Let's extend the createScript() method so we can see when the script is done loading\
+function createScript( scriptLocation ) \{\
+    // create the script element\
+    var script = document.createElement('script');\
+    // set source\
+    script.src = scriptLocation;\
+    // add listener for when script is loaded\
+    script.onload = script.onreadystatechange = function() \{\
+        // check the state to see if script is loaded\
+        if ((!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) \{\
+            console.log( 'We are loaded' );\
+        \}\
+    \}\
+    // now append to head\
+    document.head.appendChild( script );\
+\}\
+\
+This allows us to chain on some other functionality insuring the load order happens correctly. Because JS is an asynchronous language, functions called one after the other can be called in any unpredictable order unless the latter class relies on a response of the former.  \
+\
+8. So let's take what we just did and turn it into a script loading method which can handle a list of scripts to load.\
+function loadScripts(scripts, position) \{\
+    // create the script element\
+    var script = document.createElement('script');\
+    // set source\
+    script.src = scripts[position];\
+    // add listener for when script is loaded\
+    script.onload = script.onreadystatechange = function() \{\
+        // check the state to see if script is loaded\
+        if ((!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) \{\
+            // increment position\
+            position++;\
+            // on success check to see if we are at the end of the scripts to load\
+            if (scripts.length === position) \{\
+                return false;\
+            \}\
+            // if not call function to load next script\
+            loadScripts( scripts, position );\
+        \}\
+    \}\
+    // now append to head\
+    document.head.appendChild( script );\
+\}\
+\
+To see this in action, let's update our createScript() method to add more scripts after the first script has been added. \
+function createScript( scriptLocation ) \{\
+    // create the script element\
+    var script = document.createElement('script');\
+    // set source\
+    script.src = scriptLocation;\
+    // add listener for when script is loaded\
+    script.onload = script.onreadystatechange = function() \{\
+        // check the state to see if script is loaded\
+        if ((!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) \{\
+            // 9 first do console then add this\
+            // now that the script is loaded, let's load the rest in one function\
+            // define scripts to load\
+            var scripts = [\
+                "scripts/body_controller.js",\
+                "scripts/listeners.js",\
+                "scripts/ajax.js",\
+            ];\
+            // call function to load scripts\
+            setTimeout(loadScripts, wait + 100, scripts, 0);\
+        \}\
+    \}\
+    // now append to head\
+    document.head.appendChild( script );\
+\}\
+\
+10. So far, we've been manipulating the head of our document; adding scripts in dynamically and setting up the foundation for what we will be doing in the body here on out.\
+\
+11. Now we're going to setup our first object. We're going to create an object to do all our manipulating of the DOM so we can reuse the functions over and over again. \
+\
+So we'll open the body.js file and create our class.\
+function domManipulator() \{\
+\
+\}\
+\
+In our body_controller.js we'll instantiate the object which will allow us to use any methods we create in it as needed. \
+var body = new domManipulator();\
+\
+12. So let's create our first method to create elements on the fly but before we do, let's grab the document body and set it as a property that can be used through the object.\
+var body = document.body;\
+console.log( body );\
+\
+Next, we'll add a method for creating elements. \
+this.createElement = function( type, id, tar ) \{\
+    // create element on the body using the traditional method\
+    var newElement = document.createElement( type );\
+    // check to see if there is a target and if so append it\
+    if ( tar ) \{\
+        document.getElementById( tar ).appendChild( newElement );\
+    \} else \{\
+        body.appendChild( newElement );\
+    \}\
+    // now change the id to desired value\
+    newElement.setAttribute( 'id', id );\
+    // return true so conditionals will work\
+    return true;\
+\}\
+\
+13. Now let's use our new method in the body_controller.js\
+body.createElement( 'h1', 'first_header', '');\
+\
+We refresh and there it is, our first header.\
+\
+14. The next thing we'll want to do is update elements we've created so let's create a method to do this. What we are creating here is a method that will update a DOM's attributes or it's style. Properties can either be a string\'96 and if so, it's an attribute\'96 or an array that we'll convert into a path of the style to update.\
+\
+    // 7 write function for changing dom\
+    this.updateElement = function( tar, properties, value) \{\
+        // 9 expand method to take array of properties\
+        if ( typeof properties === 'string') \{\
+            document.getElementById( tar )[properties] = value;\
+        \} else \{\
+            // set target as base for changing property\
+            var baseTarget = document.getElementById( tar );\
+            // loop through properties to build path to property to change\
+            for ( var p = 0; p < properties.length; p++ ) \{\
+                // check to see if we've reached the end, if so\
+                // that the full path and set value\
+                if ( p === ( properties.length - 1 )) \{\
+                    // set value\
+                    baseTarget[ properties [ p ] ] = value;\
+                \} else \{\
+                    // if not keep building path\
+                    baseTarget = baseTarget[ properties[ p ] ];\
+                \}\
+            \}\
+        \}\
+    \}\
+\
+And now let's call it by adding content to the header element we just created in body_controller.js.\
+body.updateElement( 'first_header', 'innerHTML', 'gitHub Issues' );\
+\
+\
+15. Now that we have those two methods, let's create a div and then set attributes on it. \
+\
+    // 9 create div and set background color\
+    body.createElement( 'div', 'first_div', '');\
+    body.updateElement( 'first_div', [ 'style', 'backgroundColor' ], '#CCCCCC' );\
+    body.updateElement( 'first_div', [ 'style', 'width' ], '500px' );\
+    body.updateElement( 'first_div', [ 'style', 'height' ], '500px' );\
+\
+16. Now let's use this to create an image inside the div we just created. You'll see our method allows for defining a parent element to append the new element to and in this case, it's the div we just created.\
+    \
+    // 10 create image and attach a source\
+    body.createElement( 'img', 'WAT', 'first_div');\
+    body.updateElement( 'WAT', 'src', 'resources/CXpK6Rg.jpg' );\
+\
+Let's also center the image inside that div.\
+\
+    // 11 now let's center it\
+    body.updateElement( 'first_div', [ 'style', 'textAlign' ], 'center' );\
+\
+17. Next, let's link this image to another site. First we'll need to create  link element. \
+    // 12 create link element with properties\
+    body.createElement( 'a', 'my_link', 'first_div' );\
+    body.updateElement( 'my_link', 'target', '_blank' );\
+    body.updateElement( 'my_link', 'href', 'http://pytennessee.org' );\
+\
+18. Now we can either create the image again in place it inside the link element, or since this is probably functionality we'll want to use over again, let's create a new method on our manipulator class. \
+    this.moveElement = function( mover, moveTo ) \{\
+        // get the mover\
+        var moverObj = document.getElementById( mover );\
+        // remove mover\
+        //moverObj.parentNode.removeChild( moverObj );\
+        // 18 replace the above with the new call\
+        this.deleteElement( mover );\
+        // append to moveTo target\
+        document.getElementById( moveTo ).appendChild( moverObj );\
+    \}\
+\
+Now instead of creating the image again, we'll use our new move method, this time we'll do it in a time out so we can see it in action.\
+    setTimeout( function() \{\
+        body.updateElement( 'WAT', 'src', 'resources/CXpK6Rg.jpg' );\
+        // 14 now let's move the image to inside the link\
+        body.moveElement( 'WAT', 'my_link' );\
+    \}, getWait() );\
+\
+19. Now that we've seen create and update, it makes sense we might want to delete some elements so let's create method for this and use it. \
+\
+First, let's setup some things in our body_controller.js file to delete.\
+    // 15 let's create some things to delete\
+    body.createElement( 'div', 'second_div', '');\
+    body.updateElement( 'second_div', [ 'style', 'border' ], '1px solid' );\
+    body.updateElement( 'second_div', [ 'style', 'padding' ], '10px' );\
+    body.createElement( 'h2', 'delete_header', 'second_div');\
+    body.updateElement( 'delete_header', 'innerHTML', 'Just something to delete' );\
+\
+Here we've created two new elements, a second div and a second header. Next let's create our delete method: \
+    this.deleteElement = function( target ) \{\
+        // get element to delete\
+        var deleteElement = document.getElementById( target );\
+        if ( deleteElement ) \{\
+            deleteElement.parentNode.removeChild( deleteElement );\
+        \}\
+    \}\
+\
+And let's use it.\
+body.deleteElement( 'delete_header' );\
+\
+20. Now let's talk Listeners which will be the next thing we focus on. You can set a listener on any part of the document on any action that can happen to them. Such as the head, body, specific dom elements; on change, mouse movements, clicks and so fourth. \
+\
+In our listeners.js document, let's create a listener that watches what we hover over and informs us by updating another elements we've created with our manipulator class.\
+document.body.addEventListener( 'mouseover', function( e ) \{\
+    // find out what was hovered\
+    var tar = e.target;\
+    // create a new element to act as a tag\
+    var tag = document.createElement( 'div' );\
+    // append to target\
+    tar.appendChild( tag );\
+    // now let's say what element we are over\
+    var html = '<h3 style="color: red;">' + tar.id + '</h3>';\
+    // 2 explain innterHTML\
+    // update hightlight box\
+    if (document.getElementById( 'highlight' )) \{\
+        document.getElementById( 'highlight' ).innerHTML = html;\
+        // now let's add a listener to see when we leave the div\
+        tar.addEventListener( 'mouseout', function() \{\
+            document.getElementById( 'highlight' ).innerHTML = 'left';\
+        \});\
+    \}\
+\});\
+\
+We now have a listener that tells us every dom object's id that we are currently mousing over. However to see this, we need to create the highlight dom element. So let's do this in our body_controller.js file.\
+    // 16 setup an element to highlight actions later\
+    body.createElement( 'div', 'highlight', '');\
+    body.updateElement( 'highlight', [ 'style', 'position' ], 'absolute' );\
+    body.updateElement( 'highlight', [ 'style', 'top' ], '0px' );\
+    body.updateElement( 'highlight', [ 'style', 'right' ], '0px' );\
+    body.updateElement( 'highlight', [ 'style', 'background' ], '#cccccc' );\
+    body.updateElement( 'highlight', [ 'style', 'padding' ], '10px' );\
+\
+Let's refresh and see it in action. \
+\
+21. Listeners really only work when you are wanting to pay attention to standard actions that happen through interaction between the user and the page. If you are wanting to observe more things happening in your application, like dom creation, and such, you would want to setup an observer.\
+// define what we need to observe\
+var observerObj = document.body;\
+\
+// setup an observer\
+var observer = new MutationObserver( function( mutations ) \{\
+    mutations.forEach( function( mutation ) \{\
+        console.log( mutation.target.id );\
+        if ( mutation.target.id !== 'highlight' ) \{\
+            console.log( mutation );\
+            console.log( document.body.innerHTML );\
+        \}\
+    \});\
+\});\
+\
+// define configuration for observer\
+var observerConfig = \{\
+    childList: true,\
+    attributes: true,\
+    characterData: true,\
+    subtree: true,\
+    attributeOldValue: true,\
+    characterDataOldValue: true\
+\};\
+\
+// connection observer to observee\
+observer.observe( observerObj, observerConfig );\
+\
+This will provide you with a more robust listener but you'll also need more logic for processing what's going on. Let's take a look at it all.\
+\
+22. Okay, we've got two more things I want to go over with you today. First is data bindings and setting up a data model with those bindings, then finally how to create a simple templeting engine, with an AJAX object, to simplify the dom creation. \
+\
+\
+23. Okay, so we're going to be focusing on a new interface, so let's use our delete method to remove all the elements we've create to this point:\
+    setTimeout( function() \{\
+        var toDelete =  [\
+            'first_header',\
+            'first_div',\
+            'WAT',\
+            'my_link',\
+            'second_div',\
+            'highlight',\
+        ];\
+        // loop through and delete all elements\
+        for ( item in toDelete ) \{\
+            body.deleteElement( toDelete[ item ] );\
+        \}\
+        // 19 now to remove the listener\
+        // we do this to make sure all listeners are gone\
+        document.body.removeEventListener( 'mouseover', function() \{ console.log('removed listener'); \}, false );\
+        document.body.removeEventListener( 'mouseout', function() \{ console.log('removed listener'); \}, false );\
+    \}, getWait() + 200 );\
+\
+24. Now, let's create our binding object which creates and maintains the relationship between the dom element and the data model we'll be creating. In our bindings.js create a new class.\
+function dataBinder( objectId ) \{\
+\}\
+\
+Now, let's create the publisher subscriber method.\
+    // Create the actual publish and subscription object\
+    var pubSub = \{\
+        // define an array to hold all the callbacks\
+        callbacks: \{\},\
+\
+        // setup the subscriber method\
+        on: function( target, callbackFunction ) \{\
+            // check to see if the target already has a callback\
+            // if not, create one and set it as an object\
+            if ( !this.callbacks[ target ] ) \{\
+                this.callbacks[ target ] = [];\
+            \}\
+            this.callbacks[ target ].push( callbackFunction );\
+        \},\
+\
+        // setup the trigger method, calling the actuall subscribed functions\
+        trigger: function(target) \{\
+            // check to see if the target already has a callback\
+            // if not, create one and set it as an object\
+            if ( !this.callbacks[ target ] ) \{\
+                this.callbacks[ target ] = [];\
+            \}\
+            // loop through callbacks for the target and fire the functions\
+            var len = this.callbacks[ target ].length;\
+            for ( var i = 0; i < len; i++) \{\
+                this.callbacks[ target ][ i ].apply( this, arguments );\
+            \}\
+        \}\
+    \}\
+\
+Now add what element is being called\
+    // setup a couple properties we'll need\
+    // when instantiating multiple objets these properties don't work\
+    data_attr = "data-bind-" + objectId,\
+    message = objectId + ":change",\
+\
+These properties won't maintain when we setup multiple instances of the models but are used in the setup.\
+\
+Now, create the method that will be called when a dom element is updated and that will call the pubSub method. \
+    // define a proxy method to be called on actual change\
+    changeHandler = function( evt ) \{\
+        var target = evt.target,\
+        dataAttr = getAttrFromTarget( evt.target.id ),\
+        prop_name = target.getAttribute( data_attr ); // should be able to remove\
+\
+        data_attr = dataAttr[0];\
+        message = dataAttr[1] + ':change';\
+\
+        if ( dataAttr && dataAttr !== "" ) \{\
+            pubSub.trigger( dataAttr[1] + ':change', dataAttr[0], target.value );\
+        \}\
+    \};\
+\
+Next the helper method to get an array of attribute and user model from the event target.\
+    // get the target data-bind attribute\
+    getAttrFromTarget = function( tar ) \{\
+        var attributes = document.getElementById( tar ).attributes;\
+        for ( var p = 0; p < attributes.length; p++ ) \{\
+            // current attribute\
+            var curAttr = attributes[ p ].name;\
+            // build a substring to do check against\
+            if ( typeof curAttr === 'string' ) \{\
+                var subStr = curAttr.substring( 0, 9 );\
+                var user = curAttr.substring(10);\
+                if ( subStr === 'data-bind' ) \{\
+                    return [ attributes[ p ].value, user ];\
+                \}\
+            \}\
+        \}\
+    \};\
+\
+Now let's setup the listener to trigger the handler.\
+    // Listen to change events and proxy to PubSub\
+    if ( document.addEventListener ) \{\
+        document.addEventListener( "change", changeHandler, false );\
+    \}\
+\
+And finally, our method to update the dom elements attached to the pubSub when a change comes into the model.\
+    // PubSub propagates changes to all bound elements\
+    pubSub.on( message, function( evt, prop_name, new_val ) \{\
+        var elements = document.querySelectorAll(\
+            "[" + data_attr + "=" + prop_name + "]"\
+        ),\
+        tag_name;\
+\
+        for ( var i = 0, len = elements.length; i < len; i++ ) \{\
+            tag_name = elements[ i ].tagName.toLowerCase();\
+\
+            if ( tag_name === "input" || tag_name === "textarea" || tag_name === "select" ) \{\
+                elements[ i ].value = new_val;\
+            \} else \{\
+                elements[ i ].innerHTML = new_val;\
+            \}\
+        \}\
+    \});\
+\
+    return pubSub;\
+\
+25. Now we need our user model. So in our user_model.js we'll create the model class. \
+function user( uid ) \{\
+\}\
+\
+First thing, we'll setup an instance of the binder and let it know which user model we are. \
+    // create an instance of our binder\
+    var binder = new dataBinder( uid ),\
+\
+Next we'll setup the actual properties for the model and trigger the binder when an update happens.\
+    // now build the actual user with properties\
+    user = \{\
+        // the list of attributes for the user model\
+        attributes: \{\},\
+\
+        // The attribute setter publish changes using the dataBinder PubSub\
+        set: function( attr_name, val ) \{\
+            if ( !this.attributes[ uid ] ) \{\
+                this.attributes[ uid ] = [];\
+            \}\
+            // setter for defining attribute and value\
+            this.attributes[ uid ][ attr_name ] = val;\
+            // Use the publish method to force an update\
+            binder.trigger( uid + ":change", attr_name, val, this );\
+            console.log('Updated Attributes: ', this.attributes);\
+        \},\
+\
+        // Getter for returning the attribute\
+        get: function( attr_name ) \{\
+            return this.attributes[ uid ][ attr_name ];\
+        \},\
+\
+        _binder: binder\
+    \};\
+\
+Last, we'll subscribe to the pub sub. \
+    // Subscribe to the PubSub for the data update\
+    binder.on( uid + ":change", function( evt, attr_name, new_val, initiator ) \{\
+        // so if the value being set is not in the user model, set it\
+        if ( initiator !== user ) \{\
+            user.set( attr_name, new_val );\
+        \}\
+    \});\
+\
+    return user;\
+\
+And now we have a model that is bound to the dom and when one changes the other does. \
+\
+26. Last thing we need to do is setup an html element to for the model. In our body_controller.js let's create an input field and bind it to a user model.\
+    body.createElement( 'input', 'user_name', '');\
+    body.setAttr( 'user_name', 'data-bind-user1', 'name' );\
+    // going to attach it to the document in the case we need it else where\
+    userModel = new user( 'user1' );\
+\
+We also need to create a new method in our body_controller.js script for setting that attribute. It's one line but for the sack of convention, we'll create a method that follows the same convention we've setup to this point.\
+    this.setAttr = function( target, attribute, value) \{\
+        document.getElementById( target ).setAttribute( attribute, value );\
+    \}\
+\
+27. Let's expand this user to have more properties. \
+    // a user holding div and create a few more properties\
+    body.createElement( 'div', 'user_holder', '');\
+    body.updateElement( 'user_holder', [ 'style', 'padding' ], '10px' );\
+    // create header for users\
+    body.createElement( 'h2', 'user_header', 'user_holder');\
+    body.updateElement( 'user_header', 'innerHTML', 'User Record' );\
+    // move our first input into div holder\
+    body.moveElement( 'user_name', 'user_holder' );\
+    // create input for phone number\
+    body.createElement( 'input', 'user_phone', 'user_holder');\
+    body.setAttr( 'user_phone', 'data-bind-user1', 'phone' );\
+\
+28. This is great, right. Well, it is kinda cumbersome to create each of the users and properties line by line, so let's setup a templeting engine to simplify the process. \
+\
+So the first thing we're going to do is create a template of HTML code that we can reuse in the templates/user.html file. \
+<div id="user_\{\{userId\}\}" style="padding:10px;">\
+    <h2>User \{\{name\}\} Record</h2>\
+    <input type='text' data-bind-\{\{userId\}\}="name" value="\{\{name\}\}" id="\{\{userId\}\}_name"></input>\
+    <input type='text' data-bind-\{\{userId\}\}="phone" value="\{\{phone\}\}" id="\{\{userId\}\}_phone"></input>\
+</div>\
+\
+Very simple and to the point. \
+\
+29. Next we need something to call the template and return it's content. So let's create a real simple AJAX class that simply does a get and returns the results of the request.\
+// ajax.js is here\
+function ajax() \{\
+\
+    // build request object\
+    var request = new XMLHttpRequest();\
+    var requestType = 'GET';\
+\
+    // create make a request method\
+    this.makeRequest = function( path ) \{\
+        request.open( requestType, path, false);\
+        request.send(null);\
+        return request.responseText;\
+    \}\
+\}\
+\
+30. Now we'll add one more method to our library for getting a template and populating with some predefined information. \
+    this.getTemplate = function( template, options, appendee, requestor ) \{\
+        // make request for template\
+        var html = requestor.makeRequest( template );\
+        // replace all the options in the template with their values\
+        for ( var pos in options ) \{\
+            var tempPatt = new RegExp( '\{\{' + pos + '\}\}', 'g' );\
+            html = html.replace(tempPatt, options[ pos ] );\
+        \}\
+        // now that we have the updated html we need to get the current html\
+        // of the appendee and combine then replace\
+        // show the easy way and explain why it's bad\
+        var oldHtml = document.getElementById( appendee ).innerHTML;\
+        document.getElementById( appendee ).innerHTML = oldHtml + html;\
+        // now that we have all the final html and in the dom\
+        // let's tigger an event on each input so the model is created\
+        var items = document.querySelectorAll( '[data-bind-' + options.userId + ']' );\
+        // create an event so we can populate the model\
+        var myEvent = document.createEvent('Event');\
+        // define it to match our listener\
+        myEvent.initEvent('change', true, true);\
+        // loop through each input and trigger the event\
+        for ( var i in items ) \{\
+            var dispatchOn = document.getElementById( items[ i ].id );\
+            if (dispatchOn) \{\
+                dispatchOn.dispatchEvent( myEvent );\
+            \}\
+        \}\
+    \}\
+\
+Once we have this method we can start calling new users via the template. \
+    // so let's setup a templating method to body\
+    // build options\
+    setTimeout( function() \{\
+        // create the requestor\
+        // we do it here as part of DI, makes it easier to test\
+        var requestor = new ajax();\
+        // create the new user model\
+        var userModel2 = new user( 'user2' );\
+        // define what options and values are for inside the template\
+        var templateOptions = \{\
+            'userId': 'user2',\
+            'name': 'Jacques',\
+            'phone': '615-293-0328',\
+        \}\
+        // make request to add the tempalte\
+        body.getTemplate(\
+            'templates/user.html',\
+            templateOptions,\
+            'user_holder',\
+            requestor,\
+            userModel2\
+        );\
+    \}, getWait() + 200 );\
+\
+31. And since it's so easy, let's create one more. \
+    setTimeout( function() \{\
+        // create the requestor\
+        // we do it here as part of DI, makes it easier to test\
+        var requestor = new ajax();\
+        // create the new user model\
+        userModel3 = new user( 'user3' );\
+        // define what options and values are for inside the template\
+        var templateOptions = \{\
+            'userId': 'user3',\
+            'name': 'Angela',\
+            'phone': '615-293-0248',\
+        \}\
+        // make request to add the tempalte\
+        body.getTemplate(\
+            'templates/user.html',\
+            templateOptions,\
+            'user_holder',\
+            requestor,\
+            userModel3\
+        );\
+    \}, getWait() + 200 );\
+\
+\
+\
+
+\fs24 \
+\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+\
+}
