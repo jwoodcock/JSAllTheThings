@@ -1,8 +1,10 @@
 function hoppyPeople( body, appendTo ) {
 
+    var binder = new dataBinder();
+
     people = {
         // keep a track of how many people there are
-        attributes: {},
+        persons: {},
         count: 0,
         active: 0,
         minY: 150,
@@ -10,28 +12,32 @@ function hoppyPeople( body, appendTo ) {
 
         create: function() {
             // get next person id
-            this.attributes[ this.count ] = [];
-            var target = this.attributes[ this.count ];
-            // set some defaults
+            this.persons[ this.count ] = [];
+            var target = [];
+            // set some defaults properties for the person
             target.height = 5;
             target.currentX = Math.floor(Math.random() * 600) + 1;
             target.multiplier = (Math.floor(Math.random() * 300) / 1000 ) + 1;
             target.currentY = this.maxY; 
             target.direction = 'down';
-            target.view = "<div id='person" + this.count + "' class='person' style='position:absolute'>"
+            target.view = document.createElement( 'div' );
+            target.view.innerHTML = "<div id='person" + this.count + "' class='person' style='position:absolute'>"
             + "<img src='resources/sadam_up.gif' />"
             + "</div>";
+            this.persons[ this.count ] = target;
             this.active = this.count;
             // render
-            document.getElementById( appendTo ).innerHTML += this.attributes[ this.active ].view;
-            setInterval( this.render.bind( this ), 1, this.count );
+            document.getElementById( appendTo ).appendChild( target.view );
+            setInterval( this.render.bind( this, this.count ), 1 );
             // up the count
             this.count++;
+            // add new person to the select list for editing
+            body.addOption( 'active_person', 'Person' + this.count, this.count );
         },
 
         render: function( tar ) {
             var target = document.getElementById( 'person' + tar );
-            var values = this.attributes[ tar ];
+            var values = this.persons[ tar ];
             // set x & y
             target.style.top = values.currentY + 'px';
             target.style.left = values.currentX + 'px';
@@ -48,10 +54,33 @@ function hoppyPeople( body, appendTo ) {
         },
 
         update: function(tar, property, value) {
-            this.attributes[ tar ][ property ] = value; 
+            this.persons[ tar ][ property ] = value; 
         }
 
     };
+
+    binder.on( 'people:change', function( evt, attr_name, new_val, initiator ) {
+        console.log( evt, attr_name, new_val, initiator );
+
+        if ( attr_name === 'active' ) {
+            // strip person from value
+            var personNum = new_val.replace( 'Person', '' );
+            // set new active
+            people.active = personNum;
+
+            // update display
+            //body.updateElement( 'person_type', 
+            body.updateElement(
+                'multiplier',
+                'value',
+                ( people.persons[ ( people.active - 1 ) ].multiplier * 10 )
+            );
+        } else if ( attr_name === 'multiplier' ) {
+            people.persons[ ( people.active - 1 ) ].multiplier = new_val/10;
+        } else if ( attr_name === 'type' ) {
+            
+        }
+    });
 
    return people; 
 }

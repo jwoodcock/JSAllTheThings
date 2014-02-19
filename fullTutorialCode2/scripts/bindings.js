@@ -5,7 +5,7 @@
  * @param {String} objectId Id of the object to bind to
  */
 // explain how this class is different that our prior classes
-function dataBinder( objectId ) {
+function dataBinder() {
 
     // Create the actual publish and subscription object
     var pubSub = {
@@ -37,16 +37,10 @@ function dataBinder( objectId ) {
         }
     }
 
-    // setup a couple properties we'll need
-    // when instantiating multiple objets these properties don't work
-    data_attr = "data-bind-" + objectId,
-    message = objectId + ":change",
-
     // define a proxy method to be called on actual change
     changeHandler = function( evt ) {
         var target = evt.target,
-        dataAttr = getAttrFromTarget( evt.target.id ),
-        prop_name = target.getAttribute( data_attr ); // should be able to remove
+        dataAttr = getAttrFromTarget( evt.target.id );
 
         data_attr = dataAttr[0];
         message = dataAttr[1] + ':change';
@@ -77,24 +71,6 @@ function dataBinder( objectId ) {
     if ( document.addEventListener ) {
         document.addEventListener( "change", changeHandler, false );
     }
-
-    // PubSub propagates changes to all bound elements
-    pubSub.on( message, function( evt, prop_name, new_val ) {
-        var elements = document.querySelectorAll(
-            "[" + data_attr + "=" + prop_name + "]"
-        ),
-        tag_name;
-
-        for ( var i = 0, len = elements.length; i < len; i++ ) {
-            tag_name = elements[ i ].tagName.toLowerCase();
-
-            if ( tag_name === "input" || tag_name === "textarea" || tag_name === "select" ) {
-                elements[ i ].value = new_val;
-            } else {
-                elements[ i ].innerHTML = new_val;
-            }
-        }
-    });
 
     return pubSub;
 }
