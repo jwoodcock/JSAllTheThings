@@ -75,6 +75,15 @@ function hoppyPeople( body, appendTo ) {
                 'value',
                 ( people.persons[ ( people.active - 1 ) ].multiplier * 10 )
             );
+            // change the select menu
+            var select = document.getElementById( 'person_type' );
+            for(var i, j = 0; i = select.options[j]; j++) {
+                console.log( i.value, people.persons[ ( people.active - 1 ) ].type );
+                if( i.value == people.persons[ ( people.active - 1 ) ].type ) {
+                    select.selectedIndex = j;
+                    break;
+                }
+            } 
         } else if ( attr_name === 'multiplier' ) {
             // update the multiplier and we divid by 10 so people
             // don't have to deal with fractions
