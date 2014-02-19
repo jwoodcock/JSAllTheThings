@@ -20,9 +20,10 @@ function hoppyPeople( body, appendTo ) {
             target.multiplier = (Math.floor(Math.random() * 300) / 1000 ) + 1;
             target.currentY = this.maxY; 
             target.direction = 'down';
+            target.type = 'person';
             target.view = document.createElement( 'div' );
             target.view.innerHTML = "<div id='person" + this.count + "' class='person' style='position:absolute'>"
-            + "<img src='resources/sadam_up.gif' />"
+            + "<img src='resources/totoro.gif' />"
             + "</div>";
             this.persons[ this.count ] = target;
             this.active = this.count;
@@ -61,24 +62,33 @@ function hoppyPeople( body, appendTo ) {
 
     binder.on( 'people:change', function( evt, attr_name, new_val, initiator ) {
         console.log( evt, attr_name, new_val, initiator );
-
         if ( attr_name === 'active' ) {
             // strip person from value
             var personNum = new_val.replace( 'Person', '' );
+
             // set new active
             people.active = personNum;
 
             // update display
-            //body.updateElement( 'person_type', 
             body.updateElement(
                 'multiplier',
                 'value',
                 ( people.persons[ ( people.active - 1 ) ].multiplier * 10 )
             );
         } else if ( attr_name === 'multiplier' ) {
+            // update the multiplier and we divid by 10 so people
+            // don't have to deal with fractions
             people.persons[ ( people.active - 1 ) ].multiplier = new_val/10;
         } else if ( attr_name === 'type' ) {
-            
+            // changing type means we need to query for a new tempalte.
+            // request the new html
+            var html = body.getTemplate(
+                'templates/' + new_val + ".html",
+                { 'count':  ( people.active - 1 ) }
+            );
+            // now append to the object that
+            var target = document.getElementById( 'person' + ( people.active - 1 ) ).parentNode;
+            target.innerHTML = html;
         }
     });
 

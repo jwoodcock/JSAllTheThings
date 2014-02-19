@@ -68,7 +68,8 @@ function domManipulator() {
         document.getElementById( target ).setAttribute( attribute, value );
     }
     // 27 Create template loader and renderor
-    this.getTemplate = function( template, options, appendee, requestor ) {
+    this.getTemplate = function( template, options ) {
+        var requestor = new ajax();
         // make request for template
         var html = requestor.makeRequest( template );
         // replace all the options in the template with their values
@@ -76,25 +77,7 @@ function domManipulator() {
             var tempPatt = new RegExp( '{{' + pos + '}}', 'g' );
             html = html.replace(tempPatt, options[ pos ] );
         }
-        // now that we have the updated html we need to get the current html
-        // of the appendee and combine then replace
-        // show the easy way and explain why it's bad
-        var oldHtml = document.getElementById( appendee ).innerHTML;
-        document.getElementById( appendee ).innerHTML = oldHtml + html;
-        // now that we have all the final html and in the dom
-        // let's tigger an event on each input so the model is created
-        var items = document.querySelectorAll( '[data-bind-' + options.userId + ']' );
-        // create an event so we can populate the model
-        var myEvent = document.createEvent('Event');
-        // define it to match our listener
-        myEvent.initEvent('change', true, true);
-        // loop through each input and trigger the event
-        for ( var i in items ) {
-            var dispatchOn = document.getElementById( items[ i ].id );
-            if (dispatchOn) {
-                dispatchOn.dispatchEvent( myEvent );
-            }
-        }
+        return html;
     }
     this.addOption = function( tar, value ) {
         var select = document.getElementById( tar );

@@ -1,4 +1,3 @@
-// ajax.js is here
 function ajax() {
 
     // build request object
