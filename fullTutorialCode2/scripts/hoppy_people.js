@@ -20,7 +20,7 @@ function hoppyPeople( body, appendTo ) {
             target.multiplier = (Math.floor(Math.random() * 300) / 1000 ) + 1;
             target.currentY = this.maxY; 
             target.direction = 'down';
-            target.type = 'person';
+            target.type = 'totoro';
             target.view = document.createElement( 'div' );
             target.view.innerHTML = "<div id='person" + this.count + "' class='person' style='position:absolute'>"
             + "<img src='resources/totoro.gif' />"
@@ -89,6 +89,7 @@ function hoppyPeople( body, appendTo ) {
             // now append to the object that
             var target = document.getElementById( 'person' + ( people.active - 1 ) ).parentNode;
             target.innerHTML = html;
+            people.persons[ ( people.active - 1 ) ].type = new_val;
         }
     });
 
