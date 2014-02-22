@@ -38,6 +38,32 @@
     //var script = document.createElement('script');
     // set source
     //script.src = scriptLocation;
+    // now append to head
+    //document.head.appendChild( script );
+//}
+
+// 6
+//function createScript( scriptLocation ) {
+    // create the script element
+    //var script = document.createElement('script');
+    // set source
+    //script.src = scriptLocation;
+    // 8 add listener after showing append
+    // add listener for when script is loaded
+    //script.onload = script.onreadystatechange = function() {
+        // check the state to see if script is loaded
+        // console.log('script is ready');
+    //}
+    // now append to head
+    //document.head.appendChild( script );
+//}
+
+// 6
+//function createScript( scriptLocation ) {
+    // create the script element
+    //var script = document.createElement('script');
+    // set source
+    //script.src = scriptLocation;
     // 8 add listener after showing append
     // add listener for when script is loaded
     //script.onload = script.onreadystatechange = function() {
@@ -92,10 +118,10 @@
     //return wait = wait + 200;
 //}
 
-// 5 create body elements
+//createHead();
+//
 //setTimeout(createBody, wait + 200 );
-// 3 outside the if create head
-// 7 move into an if statement
+//
 //if ( setTimeout( createHead, wait ) ) {
     //setTimeout( createScript, wait + 200, 'scripts/body.js' );
 //}
